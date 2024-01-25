@@ -6,7 +6,6 @@ struct ContentView: View {
     let emojisFood = ["🥐", "🧁", "☕️", "🍕", "🍦", "🍜", "🍔", "🍗"]
     let emojisTransport = ["🚁", "🚘", "✈️", "⛵️", "🚂", "🚜", "🛵", "🚚"]
     
-    @State var cartCount: Int = 4
     @State var selectedCategory: EmojiCategory = .animal
     
     enum EmojiCategory {
@@ -22,11 +21,11 @@ struct ContentView: View {
             }
             Spacer()
             cardAdjusters
-            }
-            .padding()
-            .onAppear {
-                updateEmojis()
-            }
+        }
+        .padding()
+        .onAppear {
+            updateEmojis()
+        }
     }
     
     var cards: some View {
