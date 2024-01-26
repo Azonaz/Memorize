@@ -2,11 +2,12 @@ import SwiftUI
 
 struct ContentView: View {
     @State var emojis: [String] = []
-    let emojisAnimal = ["🐱", "🐥", "🐙", "🐼", "🦩", "🐑", "🐭", "🐳"]
-    let emojisFood = ["🥐", "🧁", "☕️", "🍕", "🍦", "🍜", "🍔", "🍗"]
-    let emojisTransport = ["🚁", "🚘", "✈️", "⛵️", "🚂", "🚜", "🛵", "🚚"]
+    let emojisAnimal = ["🐱", "🐥", "🐙", "🐼", "🦩", "🐑", "🐭", "🐳", "🐍", "🦋"]
+    let emojisFood = ["🥐", "🧁", "☕️", "🍕", "🍦", "🍜", "🍔", "🍗", "🍧", "🍳", "🥗"]
+    let emojisTransport = ["🚁", "🚘", "✈️", "⛵️", "🚂", "🚜", "🛵", "🚚", "🚲", "🛥️"]
     
     @State var selectedCategory: EmojiCategory = .animal
+    @State var cardColor: Color = .orange
     
     enum EmojiCategory {
         case animal, food, transport
@@ -29,13 +30,13 @@ struct ContentView: View {
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatBestFits()))]) {
             ForEach(0..<emojis.count, id: \.self) { index in
                 CardView(content: emojis[index])
                     .aspectRatio(2/3, contentMode: .fit)
             }
         }
-        .foregroundColor(.orange)
+        .foregroundColor(cardColor)
     }
     
     var cardAdjusters: some View {
@@ -45,6 +46,18 @@ struct ContentView: View {
             cardsFood
             Spacer()
             cardsTransport
+        }
+    }
+    
+    func widthThatBestFits() -> CGFloat {
+        let cardCount = emojis.count
+        
+        if cardCount == 8 {
+            return 90
+        } else if cardCount < 16 {
+            return 80
+        } else {
+            return 65
         }
     }
     
@@ -67,13 +80,24 @@ struct ContentView: View {
     
     func updateEmojis() {
         var combinedEmojis: [String] = []
+        var randomCount: Int = 4
+        
         switch selectedCategory {
         case .animal:
-            combinedEmojis = emojisAnimal + emojisAnimal
+            randomCount = Int.random(in: 4...emojisAnimal.count)
+            let selectedEmojis = Array(emojisAnimal.shuffled().prefix(randomCount))
+            combinedEmojis = selectedEmojis + selectedEmojis
+            cardColor = .orange
         case .food:
-            combinedEmojis = emojisFood + emojisFood
+            randomCount = Int.random(in: 4...emojisFood.count)
+            let selectedEmojis = Array(emojisFood.shuffled().prefix(randomCount))
+            combinedEmojis = selectedEmojis + selectedEmojis
+            cardColor = .green
         case .transport:
-            combinedEmojis = emojisTransport + emojisTransport
+            randomCount = Int.random(in: 4...emojisTransport.count)
+            let selectedEmojis = Array(emojisTransport.shuffled().prefix(randomCount))
+            combinedEmojis = selectedEmojis + selectedEmojis
+            cardColor = .red
         }
         emojis = combinedEmojis.shuffled()
     }
