@@ -1,10 +1,11 @@
 import SwiftUI
 
-struct ContentView: View {
-    @State var emojis: [String] = []
-    let emojisAnimal = ["🐱", "🐥", "🐙", "🐼", "🦩", "🐑", "🐭", "🐳", "🐍", "🦋"]
-    let emojisFood = ["🥐", "🧁", "☕️", "🍕", "🍦", "🍜", "🍔", "🍗", "🍧", "🍳", "🥗"]
-    let emojisTransport = ["🚁", "🚘", "✈️", "⛵️", "🚂", "🚜", "🛵", "🚚", "🚲", "🛥️"]
+struct EmojiMemoryGameView: View {
+    @ObservedObject var viewModel: MemorizeViewModel
+//    @State var emojis: [String] = []
+//    let emojisAnimal = ["🐱", "🐥", "🐙", "🐼", "🦩", "🐑", "🐭", "🐳", "🐍", "🦋"]
+//    let emojisFood = ["🥐", "🧁", "☕️", "🍕", "🍦", "🍜", "🍔", "🍗", "🍧", "🍳", "🥗"]
+//    let emojisTransport = ["🚁", "🚘", "✈️", "⛵️", "🚂", "🚜", "🛵", "🚚", "🚲", "🛥️"]
     
     @State var selectedCategory: EmojiCategory = .animal
     @State var cardColor: Color = .orange
@@ -20,6 +21,9 @@ struct ContentView: View {
             ScrollView {
                 cards
             }
+            Button("Shuffle") {
+                viewModel.shuffle()
+            }
             Spacer()
             cardAdjusters
         }
@@ -30,10 +34,11 @@ struct ContentView: View {
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatBestFits()))]) {
-            ForEach(0..<emojis.count, id: \.self) { index in
-                CardView(content: emojis[index])
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: viewModel.widthThatBestFits()), spacing: 0)], spacing: 0) {
+            ForEach(0..<viewModel.cards.count, id: \.self) { index in
+                CardView(viewModel.cards[index])
                     .aspectRatio(2/3, contentMode: .fit)
+                    .padding()
             }
         }
         .foregroundColor(cardColor)
@@ -46,18 +51,6 @@ struct ContentView: View {
             cardsFood
             Spacer()
             cardsTransport
-        }
-    }
-    
-    func widthThatBestFits() -> CGFloat {
-        let cardCount = emojis.count
-        
-        if cardCount == 8 {
-            return 90
-        } else if cardCount < 16 {
-            return 80
-        } else {
-            return 65
         }
     }
     
@@ -84,22 +77,22 @@ struct ContentView: View {
         
         switch selectedCategory {
         case .animal:
-            randomCount = Int.random(in: 4...emojisAnimal.count)
-            let selectedEmojis = Array(emojisAnimal.shuffled().prefix(randomCount))
+            randomCount = Int.random(in: 4...viewModel.emojisAnimal.count)
+            let selectedEmojis = Array(viewModel.emojisAnimal.shuffled().prefix(randomCount))
             combinedEmojis = selectedEmojis + selectedEmojis
             cardColor = .orange
         case .food:
-            randomCount = Int.random(in: 4...emojisFood.count)
-            let selectedEmojis = Array(emojisFood.shuffled().prefix(randomCount))
+            randomCount = Int.random(in: 4...viewModel.emojisFood.count)
+            let selectedEmojis = Array(viewModel.emojisFood.shuffled().prefix(randomCount))
             combinedEmojis = selectedEmojis + selectedEmojis
             cardColor = .green
         case .transport:
-            randomCount = Int.random(in: 4...emojisTransport.count)
-            let selectedEmojis = Array(emojisTransport.shuffled().prefix(randomCount))
+            randomCount = Int.random(in: 4...viewModel.emojisTransport.count)
+            let selectedEmojis = Array(viewModel.emojisTransport.shuffled().prefix(randomCount))
             combinedEmojis = selectedEmojis + selectedEmojis
             cardColor = .red
         }
-        emojis = combinedEmojis.shuffled()
+//        emojis = combinedEmojis.shuffled()
     }
     
     var cardsAnimal: some View {
@@ -117,8 +110,11 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    let content: String
-    @State var isFaceUp: Bool = false
+    let card: MemorizeModel<String>.Card
+    
+    init(_ card: MemorizeModel<String>.Card) {
+        self.card = card
+    }
     
     var body: some View {
         ZStack {
@@ -126,17 +122,17 @@ struct CardView: View {
             Group {
                 base.fill(.white)
                 base.strokeBorder(lineWidth: 4)
-                Text(content).font(.largeTitle)
+                Text(card.content)
+                    .font(.system(size: 200))
+                    .minimumScaleFactor(0.01)
+                    .aspectRatio(1, contentMode: .fit)
             }
-            .opacity(isFaceUp ? 1 : 0)
-            base.fill().opacity(isFaceUp ? 0 : 1)
-        }
-        .onTapGesture {
-            isFaceUp.toggle()
+            .opacity(card.isFaceUp ? 1 : 0)
+            base.fill().opacity(card.isFaceUp ? 0 : 1)
         }
     }
 }
 
 #Preview {
-    ContentView()
+    EmojiMemoryGameView(viewModel: MemorizeViewModel())
 }
