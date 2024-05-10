@@ -6,14 +6,32 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         Text("Memorize!")
             .font(.largeTitle)
+        Text(viewModel.currentTheme.name)
+            .foregroundColor(.gray)
         VStack {
             ScrollView {
                 cards
                     .animation(.default, value: viewModel.cards)
             }
-            Button("Shuffle") {
+            Button(action: {
+                viewModel.selectRandomTheme()
                 viewModel.shuffle()
-            }
+            }, label: {
+                ZStack {
+                    Rectangle()
+                        .frame(width: 160, height: 60)
+                        .foregroundColor(.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(.black, lineWidth: 1)
+                        )
+                    Text("New game")
+                        .foregroundColor(.black)
+                }
+            })
+        }
+        .onAppear() {
+            viewModel.shuffle()
         }
     }
     
@@ -28,7 +46,7 @@ struct EmojiMemoryGameView: View {
             }
         }
         .padding(16)
-        .foregroundColor(.orange)
+        .foregroundColor(viewModel.currentTheme.color)
     }
 }
 

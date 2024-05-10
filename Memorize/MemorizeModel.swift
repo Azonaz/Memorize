@@ -1,4 +1,10 @@
-import Foundation
+import SwiftUI
+
+struct Theme {
+    var name: String
+    var emoji: [String]
+    var color: Color
+}
 
 struct MemorizeModel<CardContent> where CardContent: Equatable {
     private(set) var cards: Array<Card>
