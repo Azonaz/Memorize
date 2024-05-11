@@ -4,15 +4,15 @@ struct EmojiMemoryGameView: View {
     @ObservedObject var viewModel: MemorizeViewModel
     
     var body: some View {
-        Text("Memorize!")
-            .font(.largeTitle)
-        Text(viewModel.currentTheme.name)
-            .foregroundColor(.gray)
-        Text("Score: \(viewModel.gameScore ?? 0)")
-            .foregroundColor(.black)
-            .font(.subheadline)
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.trailing, 32)
+        HStack {
+            Text(viewModel.currentTheme.name)
+                .foregroundColor(viewModel.checkColor())
+            Spacer()
+            Text("Score: \(viewModel.gameScore ?? 0)")
+                .foregroundColor(.black)
+        }
+        .font(.title)
+        .padding(.horizontal, 30)
         VStack {
             ScrollView {
                 cards
@@ -24,14 +24,15 @@ struct EmojiMemoryGameView: View {
             }, label: {
                 ZStack {
                     Rectangle()
-                        .frame(width: 140, height: 50)
+                        .frame(width: 200, height: 50)
                         .foregroundColor(.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(.black, lineWidth: 0.5)
+                                .stroke(viewModel.checkColor(), lineWidth: 1)
                         )
                     Text("New game")
                         .foregroundColor(.black)
+                        .font(.title)
                 }
             })
         }
