@@ -8,6 +8,9 @@ struct Theme {
 
 struct MemorizeModel<CardContent> where CardContent: Equatable {
     private(set) var cards: Array<Card>
+    private(set) var gameScore: Int
+    
+    var onGameScoreChange: ((Int) -> Void)?
     
     var indexOfTheOneAndOnlyFaceUpCard: Int? {
         get {
@@ -20,6 +23,7 @@ struct MemorizeModel<CardContent> where CardContent: Equatable {
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
         cards = []
+        gameScore = 0
         for pairIndex in 0..<max(2, numberOfPairsOfCards) {
             let content = cardContentFactory(pairIndex)
             cards.append(Card(content: content, id: "\(pairIndex + 1)a"))
@@ -30,6 +34,8 @@ struct MemorizeModel<CardContent> where CardContent: Equatable {
     mutating func shuffle() {
         cards.shuffle()
         print(cards)
+        gameScore = 0
+        onGameScoreChange?(gameScore)
     }
     
     mutating func choose(_ card: Card) {
@@ -39,6 +45,8 @@ struct MemorizeModel<CardContent> where CardContent: Equatable {
                     if cards[chosenIndex].content == cards[potentialIndex].content {
                         cards[chosenIndex].isMatched = true
                         cards[potentialIndex].isMatched = true
+                        gameScore += 2
+                        onGameScoreChange?(gameScore)
                     }
                 } else {
                     indexOfTheOneAndOnlyFaceUpCard = chosenIndex

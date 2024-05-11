@@ -8,6 +8,11 @@ struct EmojiMemoryGameView: View {
             .font(.largeTitle)
         Text(viewModel.currentTheme.name)
             .foregroundColor(.gray)
+        Text("Score: \(viewModel.gameScore ?? 0)")
+            .foregroundColor(.black)
+            .font(.subheadline)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing, 32)
         VStack {
             ScrollView {
                 cards
@@ -19,11 +24,11 @@ struct EmojiMemoryGameView: View {
             }, label: {
                 ZStack {
                     Rectangle()
-                        .frame(width: 160, height: 60)
+                        .frame(width: 140, height: 50)
                         .foregroundColor(.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(.black, lineWidth: 1)
+                                .stroke(.black, lineWidth: 0.5)
                         )
                     Text("New game")
                         .foregroundColor(.black)

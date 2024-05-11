@@ -15,26 +15,33 @@ class MemorizeViewModel: ObservableObject {
         let numberOfPairsOfCards = Int.random(in: 2...theme.emoji.count)
         return MemorizeModel(numberOfPairsOfCards: numberOfPairsOfCards) { pairIndex in
             return theme.emoji[pairIndex]
-            
         }
     }
     
     @Published private var model: MemorizeModel<String>
     @Published var currentTheme: Theme
+    @Published var gameScore: Int?
     
     var cards: Array<MemorizeModel<String>.Card> {
-        return model.cards
+        model.cards
     }
     
     init() {
         let randomTheme = Self.themes.randomElement()!
         self.currentTheme = randomTheme
         self.model = Self.createMemoryGame(theme: randomTheme)
+        self.gameScore = self.model.gameScore
+        model.onGameScoreChange = { [weak self] score in
+            self?.gameScore = score
+        }
     }
     
     func selectRandomTheme() {
         currentTheme = Self.themes.randomElement()!
         model = Self.createMemoryGame(theme: currentTheme)
+        model.onGameScoreChange = { [weak self] score in
+            self?.gameScore = score
+        }
     }
     
     func shuffle() {
@@ -44,6 +51,10 @@ class MemorizeViewModel: ObservableObject {
     func choose(_ card: MemorizeModel<String>.Card) {
         model.choose(card)
     }
+    
+    func updateGameScore() {
+            gameScore = model.gameScore
+        }
     
     func checkColor() -> Color {
         let color = currentTheme.color
