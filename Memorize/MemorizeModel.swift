@@ -1,9 +1,9 @@
-import SwiftUI
+import Foundation
 
 struct Theme {
     var name: String
     var emoji: [String]
-    var color: Color
+    var color: String
 }
 
 struct MemorizeModel<CardContent> where CardContent: Equatable {

@@ -46,7 +46,7 @@ struct EmojiMemoryGameView: View {
             }
         }
         .padding(16)
-        .foregroundColor(viewModel.currentTheme.color)
+        .foregroundColor(viewModel.checkColor())
     }
 }
 
