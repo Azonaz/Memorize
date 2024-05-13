@@ -46,12 +46,21 @@ struct MemorizeModel<CardContent> where CardContent: Equatable {
                         cards[chosenIndex].isMatched = true
                         cards[potentialIndex].isMatched = true
                         gameScore += 2
-                        onGameScoreChange?(gameScore)
+                    } else {
+                        if cards[chosenIndex].isSeen {
+                            gameScore -= 1
+                        }
+                        if cards[potentialIndex].isSeen {
+                            gameScore -= 1
+                        }
+                        cards[chosenIndex].isSeen = true
+                        cards[potentialIndex].isSeen = true
                     }
                 } else {
                     indexOfTheOneAndOnlyFaceUpCard = chosenIndex
                 }
                 cards[chosenIndex].isFaceUp = true
+                onGameScoreChange?(gameScore)
             }
         }
     }
@@ -59,10 +68,11 @@ struct MemorizeModel<CardContent> where CardContent: Equatable {
     struct Card: Equatable, Identifiable, CustomDebugStringConvertible {
         var isFaceUp = false
         var isMatched = false
+        var isSeen = false
         let content: CardContent
         var id: String
         var debugDescription: String {
-            "\(id): \(content) \(isFaceUp ? "up" : "down") \(isMatched ? "matched" : "")"
+            "\(id): \(content) \(isFaceUp ? "up" : "down") \(isMatched ? "matched" : "") \(isSeen ? "seen" : "")"
         }
     }
 }
